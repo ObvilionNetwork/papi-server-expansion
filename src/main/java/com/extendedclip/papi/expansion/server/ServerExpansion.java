@@ -31,6 +31,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
@@ -47,7 +48,6 @@ import java.util.regex.Pattern;
 public class ServerExpansion extends PlaceholderExpansion implements Cacheable, Configurable {
 
 	private final Map<String, SimpleDateFormat> dateFormats = new HashMap<>();
-	private final int MB = 1048576;
 	private final Runtime runtime = Runtime.getRuntime();
 	private Object craftServer;
 	private Field tps;
@@ -58,11 +58,9 @@ public class ServerExpansion extends PlaceholderExpansion implements Cacheable, 
 	private String high = "&a";
 	private String variant;
 
-	private final String VERSION = getClass().getPackage().getImplementationVersion();
-
 	public ServerExpansion() {
 		try {
-			version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+			version = "1.12";
 			if (minecraftVersion() >= 17) {
 				craftServer = Class.forName("net.minecraft.server.MinecraftServer").getMethod("getServer").invoke(null);
 			} else {
@@ -93,18 +91,18 @@ public class ServerExpansion extends PlaceholderExpansion implements Cacheable, 
 	}
 
 	@Override
-	public String getIdentifier() {
+	public @NotNull String getIdentifier() {
 		return "server";
 	}
 
 	@Override
-	public String getAuthor() {
+	public @NotNull String getAuthor() {
 		return "clip";
 	}
 
 	@Override
-	public String getVersion() {
-		return VERSION;
+	public @NotNull String getVersion() {
+		return "1.12";
 	}
 
 	public String initializeVariant() {
@@ -144,6 +142,7 @@ public class ServerExpansion extends PlaceholderExpansion implements Cacheable, 
 	@Override
 	public String onRequest(OfflinePlayer p, String identifier) {
 
+		int MB = 1048576;
 		switch (identifier) {
 		case "name":
 			return serverName == null ? "" : serverName;
@@ -214,7 +213,7 @@ public class ServerExpansion extends PlaceholderExpansion implements Cacheable, 
 		if (identifier.startsWith("countdown_")) {
 			String time = identifier.replace("countdown_", "");
 
-			if (time.indexOf("_") == -1) {
+			if (!time.contains("_")) {
 
 				Date then = null;
 
